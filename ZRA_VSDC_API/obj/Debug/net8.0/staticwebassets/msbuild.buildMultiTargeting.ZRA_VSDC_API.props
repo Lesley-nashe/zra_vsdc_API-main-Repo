@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\ZRA_VSDC_API.props" />
+</Project>
