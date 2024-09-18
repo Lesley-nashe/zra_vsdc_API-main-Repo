@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using ZRA_VSDC_API.Context;
 using ZRA_VSDC_API.Models;
 using ZRA_VSDC_API.Models.Dto;
 
@@ -17,8 +18,9 @@ namespace ZRA_VSDC_API.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    public class ItemsController : ControllerBase
+    public class ItemsController(ApplicationDbContext db) : ControllerBase
     {
+        private readonly ApplicationDbContext _db = db;
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]

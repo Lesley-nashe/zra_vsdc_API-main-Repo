@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ZRA_VSDC_API.Models;
 
@@ -7,7 +9,11 @@ namespace ZRA_VSDC_API.Models;
     {
         public required int Tpin { get; set; }
         public required int BhfId { get; set; }
+
         public int OrgInvcNo { get; set; }
+
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public required string CisInvcNo { get; set; }
         public string CustTpin { get; set; }
         public string CustNm { get; set; }
@@ -90,6 +96,8 @@ namespace ZRA_VSDC_API.Models;
 
     public class SaleItem
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public required int ItemSeq { get; set; }
         public required string ItemCd { get; set; }
         public required string ItemClsCd { get; set; }

@@ -6,17 +6,15 @@ using System.Collections.Generic;
 using System.Linq;
 using ZRA_VSDC_API.Services;
 using ZRA_VSDC_API.Models.Dto;
+using ZRA_VSDC_API.Context;
 
 namespace ZRA_VSDC_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SalesController(ISalesService salesService) : ControllerBase
+    public class SalesController(ISalesService salesService, ApplicationDbContext db) : ControllerBase
     {
-        private static List<Sale> sales = new List<Sale>();
-        private static List<SaveStockRequest> stockRequests = new List<SaveStockRequest>();
-        private static List<SaveStockMasterRequest> stockMasterRequests = new List<SaveStockMasterRequest>();
-
+        private readonly ApplicationDbContext _db = db;
 
         [HttpPost("saveSales")] //Normal sale
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -52,6 +50,9 @@ namespace ZRA_VSDC_API.Controllers
                 TaxblAmtC2 = saleRequest.TaxblAmtC2,
                 TaxblAmtC3 = saleRequest.TaxblAmtC3,
                 TaxblAmtD = saleRequest.TaxblAmtD,
+                StockRlsDt = saleRequest.StockRlsDt,
+                DestnCountryCd = saleRequest.DestnCountryCd,
+                LpoNumber = saleRequest.LpoNumber,
                 TaxblAmtRvat = saleRequest.TaxblAmtRvat,
                 TaxblAmtE = saleRequest.TaxblAmtE,
                 TaxblAmtF = saleRequest.TaxblAmtF,
@@ -110,6 +111,7 @@ namespace ZRA_VSDC_API.Controllers
                 InvcAdjustReason = saleRequest.InvcAdjustReason,
                 ItemList = saleRequest.ItemList.Select(item => new SaleItem
                 {
+                    Bcd = item.Bcd,
                     ItemSeq = item.ItemSeq,
                     ItemCd = item.ItemCd,
                     ItemClsCd = item.ItemClsCd,
@@ -145,13 +147,11 @@ namespace ZRA_VSDC_API.Controllers
             var createStockRequest = salesService.CreateStockRequest(sale);
 
             //Save sales data to Sales list
-            Data.sales.Add(sale);
-
-            //Update stock items 
-            var stockRequest = (sale);
+            _db.Sales.Add(sale);
+            _db.SaveChanges();
 
             // Update stock master
-            var stockMasterRequest = salesService.CreateStockMasterRequest(sale);
+            // var stockMasterRequest = salesService.CreateStockMasterRequest(sale);
 
             var response = new Response()
             {
@@ -160,17 +160,14 @@ namespace ZRA_VSDC_API.Controllers
                 Date = DateTime.Now,
             };
 
-            return Ok(response);
+            return Ok(sale);
         }
 
-        /*private int GenerateStockRequestNumber()
-        {
-            // Generate or retrieve the stock request number as needed
-            return new Random().Next(1000, 9999);
-        }*/
+        [HttpGet]
+        public ActionResult<IEnumerable<Sale>> Getsale(){
+            return Ok(_db.Sales);
+        }
 
     }
-
-
 
 }
